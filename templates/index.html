@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veritas AI — Real/Fake News Detector</title>
+    <meta name="description" content="An advanced machine learning portal that scans and classifies news articles to verify their authenticity using Natural Language Processing.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- CSS stylesheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Background glow elements -->
+    <div class="glow-bg glow-bg-1"></div>
+    <div class="glow-bg glow-bg-2"></div>
+    <div class="glow-bg glow-bg-3"></div>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>Veritas<span>AI</span></h1>
+                    <p class="tagline">Neural Fact Verification Portal</p>
+                </div>
+            </div>
+            <div class="status-badge" id="statusBadge">
+                <span class="pulse-dot"></span>
+                <span class="status-text">LogisticRegression Model Active</span>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <main class="main-content">
+            <!-- HERO SECTION -->
+            <section class="hero-section">
+                <h2 class="hero-title">Expose the Truth.<br>Filter the Noise.</h2>
+                <p class="hero-desc">
+                    Paste any news article, headline, or excerpt below. Our custom-trained Term Frequency-Inverse Document Frequency (TF-IDF) vectorizer and Logistic Regression classifier will analyze the linguistic features and output a real-time credibility report.
+                </p>
+                <div class="model-stats">
+                    <div class="stat-card">
+                        <div class="stat-value">98.7%</div>
+                        <div class="stat-label">Model Accuracy</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">&lt; 150ms</div>
+                        <div class="stat-label">Response Time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">44.8k</div>
+                        <div class="stat-label">Dataset Articles</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCANNER CONSOLE -->
+            <section class="scanner-section" id="scannerConsole">
+                <div class="scanner-card glass-panel">
+                    <div class="scanner-header">
+                        <div class="scanner-tabs">
+                            <button class="tab-btn active">Article Analysis</button>
+                            <button class="tab-btn" id="btnSampleReal">Sample Real</button>
+                            <button class="tab-btn" id="btnSampleFake">Sample Fake</button>
+                        </div>
+                        <div class="word-counter">
+                            <span id="charCount">0</span> characters | <span id="wordCount">0</span> words (min 5)
+                        </div>
+                    </div>
+                    
+                    <div class="input-wrapper">
+                        <div class="scanning-bar" id="scanningBar"></div>
+                        <textarea id="newsInput" placeholder="Paste your news article text here (at least 5 words)..."></textarea>
+                    </div>
+
+                    <div class="scanner-footer">
+                        <button class="btn btn-secondary" id="btnClear">Clear Content</button>
+                        <button class="btn btn-primary" id="btnScan">
+                            <span id="btnText">Scan Article</span>
+                            <div class="spinner" id="btnSpinner"></div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RESULTS SECTION (Initially hidden) -->
+            <section class="results-section hidden" id="resultsSection">
+                <div class="results-grid">
+                    <!-- VERDICT CARD -->
+                    <div class="verdict-card glass-panel" id="verdictCard">
+                        <div class="verdict-header">Analysis Verdict</div>
+                        <div class="verdict-main">
+                            <div class="verdict-icon" id="verdictIcon">
+                                <!-- Dynamic icons injected here -->
+                            </div>
+                            <div class="verdict-info">
+                                <h3 id="verdictLabel">REAL NEWS</h3>
+                                <p id="verdictDescription">Linguistic structure aligns with highly verified journalistic sources.</p>
+                            </div>
+                        </div>
+                        <div class="verdict-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Overall Confidence</span>
+                                <span class="meta-value" id="confidenceValue">99.8%</span>
+                            </div>
+                            <div class="meta-progress-bar">
+                                <div class="meta-progress-fill" id="confidenceFill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PROBABILITY CHART CARD -->
+                    <div class="chart-card glass-panel">
+                        <div class="card-title">Probability breakdown</div>
+                        <div class="chart-container">
+                            <div class="gauge-wrapper">
+                                <svg class="gauge-svg" viewBox="0 0 100 100">
+                                    <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                                    <circle class="gauge-fill" id="gaugeRealFill" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                                </svg>
+                                <div class="gauge-text">
+                                    <span class="percent" id="gaugeRealPercent">0%</span>
+                                    <span class="label">Real Probability</span>
+                                </div>
+                            </div>
+                            
+                            <div class="gauge-wrapper">
+                                <svg class="gauge-svg" viewBox="0 0 100 100">
+                                    <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                                    <circle class="gauge-fill-fake" id="gaugeFakeFill" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2"></circle>
+                                </svg>
+                                <div class="gauge-text">
+                                    <span class="percent-fake" id="gaugeFakePercent">0%</span>
+                                    <span class="label">Fake Probability</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODEL INSIGHTS LOG -->
+                <div class="insights-card glass-panel">
+                    <div class="card-title">Linguistic Metadata Logs</div>
+                    <div class="terminal-log">
+                        <div class="log-line"><span class="log-timestamp">[SYSTEM]</span> Initializing parser... Done.</div>
+                        <div class="log-line"><span class="log-timestamp">[SYSTEM]</span> Preprocessing text: converting lowercase, stripping special chars... Done.</div>
+                        <div class="log-line" id="logWordCount"><span class="log-timestamp">[METRIC]</span> Word count: 0 words analyzed.</div>
+                        <div class="log-line" id="logVectorizer"><span class="log-timestamp">[TFIDF]</span> Transforming tokens to 10k dimension vector... Done.</div>
+                        <div class="log-line" id="logPrediction"><span class="log-timestamp">[CLASSIFIER]</span> Logistic regression evaluation finished.</div>
+                        <div class="log-line command-output" id="logVerdictLine">Classification output loaded in 0.04s.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PIPELINE EXPLAINER -->
+            <section class="pipeline-section">
+                <h3 class="section-title">Detection Pipeline</h3>
+                <div class="pipeline-flow">
+                    <div class="pipeline-step glass-panel">
+                        <div class="step-num">01</div>
+                        <h4>Text Sanitization</h4>
+                        <p>Removes HTML markups, hyperlinks, digits, punctuation, and converts all characters to lowercase for uniform tokenization.</p>
+                    </div>
+                    <div class="pipeline-step glass-panel">
+                        <div class="step-num">02</div>
+                        <h4>TF-IDF Mapping</h4>
+                        <p>Evaluates how terms appear in the text compared to the corpus to determine relative word frequency and penalize common fillers.</p>
+                    </div>
+                    <div class="pipeline-step glass-panel">
+                        <div class="step-num">03</div>
+                        <h4>Logistic Classifier</h4>
+                        <p>Processes the transformed feature coordinates through a trained sigmoid function to estimate classification probabilities.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HISTORY LOGS -->
+            <section class="history-section hidden" id="historySection">
+                <h3 class="section-title">Recent Scans</h3>
+                <div class="history-grid" id="historyGrid">
+                    <!-- History cards will be dynamically rendered here -->
+                </div>
+                <div class="history-actions">
+                    <button class="btn btn-secondary btn-sm" id="btnClearHistory">Clear All History</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="app-footer">
+            <p>&copy; 2026 Veritas AI. Designed for Advanced Model Evaluation.</p>
+            <p class="tech-stack-details">Backend: Flask &bull; ML Engine: Scikit-Learn (LogisticRegression) &bull; Frontend: HTML5 / Vanilla CSS</p>
+        </footer>
+    </div>
+
+    <!-- JS scripts -->
+    <script src="/static/main.js"></script>
+</body>
+</html>

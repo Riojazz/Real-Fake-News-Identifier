@@ -1,0 +1,25 @@
+Basic project flow:
+
+Collect dataset
+Use a fake news dataset with title, text, and label.
+Preprocess text
+Convert to lowercase
+Remove punctuation
+Remove stopwords
+Clean unnecessary symbols
+Convert text to numbers
+Use TF-IDF Vectorizer
+It converts words into numerical features based on importance.
+Train ML model
+Logistic Regression
+Naive Bayes
+Random Forest
+Evaluate model
+Accuracy
+Precision
+Recall
+F1-score
+Confusion matrix
+Make prediction
+User enters a news text
+Model outputs: Real News or Fake News
