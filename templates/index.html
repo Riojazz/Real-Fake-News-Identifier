@@ -3,23 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veritas AI — Real/Fake News Detector</title>
-    <meta name="description" content="An advanced machine learning portal that scans and classifies news articles to verify their authenticity using Natural Language Processing.">
-    <!-- Google Fonts -->
+    <title>Veritas AI - Real/Fake News Detector</title>
+    <meta name="description" content="A machine learning web app that classifies news text using TF-IDF and Logistic Regression, with clear guidance for time-sensitive content.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- CSS stylesheet -->
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <!-- Background glow elements -->
     <div class="glow-bg glow-bg-1"></div>
     <div class="glow-bg glow-bg-2"></div>
     <div class="glow-bg glow-bg-3"></div>
 
     <div class="app-container">
-        <!-- HEADER -->
         <header class="app-header">
             <div class="logo-container">
                 <div class="logo-icon">
@@ -30,31 +26,29 @@
                 </div>
                 <div class="logo-text">
                     <h1>Veritas<span>AI</span></h1>
-                    <p class="tagline">Neural Fact Verification Portal</p>
+                    <p class="tagline">Pattern-Based News Classifier</p>
                 </div>
             </div>
             <div class="status-badge" id="statusBadge">
                 <span class="pulse-dot"></span>
-                <span class="status-text">LogisticRegression Model Active</span>
+                <span class="status-text">TF-IDF + Logistic Regression Active</span>
             </div>
         </header>
 
-        <!-- MAIN LAYOUT -->
         <main class="main-content">
-            <!-- HERO SECTION -->
             <section class="hero-section">
-                <h2 class="hero-title">Expose the Truth.<br>Filter the Noise.</h2>
+                <h2 class="hero-title">Score the language.<br>Verify the claim.</h2>
                 <p class="hero-desc">
-                    Paste any news article, headline, or excerpt below. Our custom-trained Term Frequency-Inverse Document Frequency (TF-IDF) vectorizer and Logistic Regression classifier will analyze the linguistic features and output a real-time credibility report.
+                    Paste any news article, headline, or excerpt below. The app compares the text with patterns learned from the training dataset and returns a model prediction with guidance. For breaking or recent stories, always confirm the claim with trusted reporting.
                 </p>
                 <div class="model-stats">
                     <div class="stat-card">
-                        <div class="stat-value">98.7%</div>
-                        <div class="stat-label">Model Accuracy</div>
+                        <div class="stat-value">TF-IDF</div>
+                        <div class="stat-label">Feature Engine</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">&lt; 150ms</div>
-                        <div class="stat-label">Response Time</div>
+                        <div class="stat-value">Local API</div>
+                        <div class="stat-label">Flask Backend</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value">44.8k</div>
@@ -63,7 +57,13 @@
                 </div>
             </section>
 
-            <!-- SCANNER CONSOLE -->
+            <section class="notice-section glass-panel">
+                <div class="notice-label">Important</div>
+                <p>
+                    This tool does not search the internet or confirm that a recent event happened. It classifies language patterns only, so latest news and breaking claims should always be verified manually.
+                </p>
+            </section>
+
             <section class="scanner-section" id="scannerConsole">
                 <div class="scanner-card glass-panel">
                     <div class="scanner-header">
@@ -76,7 +76,7 @@
                             <span id="charCount">0</span> characters | <span id="wordCount">0</span> words (min 5)
                         </div>
                     </div>
-                    
+
                     <div class="input-wrapper">
                         <div class="scanning-bar" id="scanningBar"></div>
                         <textarea id="newsInput" placeholder="Paste your news article text here (at least 5 words)..."></textarea>
@@ -92,19 +92,15 @@
                 </div>
             </section>
 
-            <!-- RESULTS SECTION (Initially hidden) -->
             <section class="results-section hidden" id="resultsSection">
                 <div class="results-grid">
-                    <!-- VERDICT CARD -->
                     <div class="verdict-card glass-panel" id="verdictCard">
                         <div class="verdict-header">Analysis Verdict</div>
                         <div class="verdict-main">
-                            <div class="verdict-icon" id="verdictIcon">
-                                <!-- Dynamic icons injected here -->
-                            </div>
+                            <div class="verdict-icon" id="verdictIcon"></div>
                             <div class="verdict-info">
                                 <h3 id="verdictLabel">REAL NEWS</h3>
-                                <p id="verdictDescription">Linguistic structure aligns with highly verified journalistic sources.</p>
+                                <p id="verdictDescription">This result reflects pattern similarity to examples in the training dataset, not a live fact-check.</p>
                             </div>
                         </div>
                         <div class="verdict-meta">
@@ -118,9 +114,8 @@
                         </div>
                     </div>
 
-                    <!-- PROBABILITY CHART CARD -->
                     <div class="chart-card glass-panel">
-                        <div class="card-title">Probability breakdown</div>
+                        <div class="card-title">Probability Breakdown</div>
                         <div class="chart-container">
                             <div class="gauge-wrapper">
                                 <svg class="gauge-svg" viewBox="0 0 100 100">
@@ -132,7 +127,7 @@
                                     <span class="label">Real Probability</span>
                                 </div>
                             </div>
-                            
+
                             <div class="gauge-wrapper">
                                 <svg class="gauge-svg" viewBox="0 0 100 100">
                                     <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
@@ -147,7 +142,23 @@
                     </div>
                 </div>
 
-                <!-- MODEL INSIGHTS LOG -->
+                <div class="advisory-card glass-panel" id="advisoryCard">
+                    <div class="card-title">Verification Guidance</div>
+                    <div class="advisory-header">
+                        <span class="advisory-badge" id="advisoryBadge">Pattern-only result</span>
+                        <span class="advisory-detail" id="advisoryDetail">No live fact-check available</span>
+                    </div>
+                    <p class="advisory-message" id="advisoryMessage">
+                        This result is based on the training dataset and should be checked against trusted reporting.
+                    </p>
+                    <div class="advisory-signals hidden" id="advisorySignals"></div>
+                    <ul class="advisory-steps" id="advisorySteps">
+                        <li>Check the publisher and publication date.</li>
+                        <li>Compare the claim with trusted sources.</li>
+                        <li>Use fact-checking websites before sharing.</li>
+                    </ul>
+                </div>
+
                 <div class="insights-card glass-panel">
                     <div class="card-title">Linguistic Metadata Logs</div>
                     <div class="terminal-log">
@@ -156,12 +167,12 @@
                         <div class="log-line" id="logWordCount"><span class="log-timestamp">[METRIC]</span> Word count: 0 words analyzed.</div>
                         <div class="log-line" id="logVectorizer"><span class="log-timestamp">[TFIDF]</span> Transforming tokens to 10k dimension vector... Done.</div>
                         <div class="log-line" id="logPrediction"><span class="log-timestamp">[CLASSIFIER]</span> Logistic regression evaluation finished.</div>
+                        <div class="log-line" id="logVerification"><span class="log-timestamp">[VERIFY]</span> Live verification: unavailable in this build.</div>
                         <div class="log-line command-output" id="logVerdictLine">Classification output loaded in 0.04s.</div>
                     </div>
                 </div>
             </section>
 
-            <!-- PIPELINE EXPLAINER -->
             <section class="pipeline-section">
                 <h3 class="section-title">Detection Pipeline</h3>
                 <div class="pipeline-flow">
@@ -183,26 +194,21 @@
                 </div>
             </section>
 
-            <!-- HISTORY LOGS -->
             <section class="history-section hidden" id="historySection">
                 <h3 class="section-title">Recent Scans</h3>
-                <div class="history-grid" id="historyGrid">
-                    <!-- History cards will be dynamically rendered here -->
-                </div>
+                <div class="history-grid" id="historyGrid"></div>
                 <div class="history-actions">
                     <button class="btn btn-secondary btn-sm" id="btnClearHistory">Clear All History</button>
                 </div>
             </section>
         </main>
 
-        <!-- FOOTER -->
         <footer class="app-footer">
-            <p>&copy; 2026 Veritas AI. Designed for Advanced Model Evaluation.</p>
-            <p class="tech-stack-details">Backend: Flask &bull; ML Engine: Scikit-Learn (LogisticRegression) &bull; Frontend: HTML5 / Vanilla CSS</p>
+            <p>&copy; 2026 Veritas AI. Built for responsible news-text classification.</p>
+            <p class="tech-stack-details">Backend: Flask &bull; ML Engine: Scikit-Learn (Logistic Regression) &bull; Frontend: HTML5 / Vanilla CSS</p>
         </footer>
     </div>
 
-    <!-- JS scripts -->
     <script src="/static/main.js"></script>
 </body>
 </html>

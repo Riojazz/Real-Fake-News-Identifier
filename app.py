@@ -11,6 +11,22 @@ CORS(app)  # Enable Cross-Origin Resource Sharing
 # Constants matching prediction.py
 CONFIDENCE_THRESHOLD = 0.75
 MIN_WORDS = 5
+RECENCY_PATTERNS = {
+    "breaking": r"\bbreaking\b",
+    "latest": r"\blatest\b",
+    "developing": r"\bdeveloping\b",
+    "today": r"\btoday\b",
+    "tonight": r"\btonight\b",
+    "this morning": r"\bthis morning\b",
+    "this afternoon": r"\bthis afternoon\b",
+    "this evening": r"\bthis evening\b",
+    "yesterday": r"\byesterday\b",
+    "minutes ago": r"\b\d+\s+minutes?\s+ago\b",
+    "hours ago": r"\b\d+\s+hours?\s+ago\b",
+    "days ago": r"\b\d+\s+days?\s+ago\b",
+    "live updates": r"\blive updates?\b",
+    "just in": r"\bjust in\b",
+}
 
 # Load model and vectorizer
 # Try current directory first, otherwise fall back to absolute path if needed
@@ -40,6 +56,75 @@ def clean_text(text):
     return text
 
 
+def detect_recency_signals(text):
+    matches = []
+    lowered_text = text.lower()
+
+    for label, pattern in RECENCY_PATTERNS.items():
+        if re.search(pattern, lowered_text):
+            matches.append(label)
+
+    if re.search(r"\b20\d{2}\b", text):
+        matches.append("recent year reference")
+
+    return matches
+
+
+def build_verification_guidance(confidence, recency_signals):
+    is_time_sensitive = bool(recency_signals)
+
+    if is_time_sensitive:
+        return {
+            "status": "needs_external_verification",
+            "time_sensitive": True,
+            "live_fact_check": False,
+            "matched_signals": recency_signals,
+            "message": (
+                "This text looks time-sensitive or breaking. The model can score "
+                "language patterns, but it cannot confirm that the reported event "
+                "actually happened."
+            ),
+            "recommended_steps": [
+                "Check the original publisher, date, and headline.",
+                "Compare the claim with at least two established news outlets.",
+                "Use a fact-checking source before sharing the article.",
+            ],
+        }
+
+    if confidence < CONFIDENCE_THRESHOLD:
+        return {
+            "status": "low_confidence",
+            "time_sensitive": False,
+            "live_fact_check": False,
+            "matched_signals": [],
+            "message": (
+                "The model is not confident about this result. Treat it as a weak "
+                "signal and verify the claim manually."
+            ),
+            "recommended_steps": [
+                "Read the full article instead of relying on one excerpt.",
+                "Verify the claim with original reporting or official statements.",
+                "Check whether the article cites evidence and named sources.",
+            ],
+        }
+
+    return {
+        "status": "pattern_only",
+        "time_sensitive": False,
+        "live_fact_check": False,
+        "matched_signals": [],
+        "message": (
+            "This result is based on language patterns learned from the training "
+            "dataset. It is not a live internet fact-check."
+        ),
+        "recommended_steps": [
+            "Use the score as a screening signal, not final proof.",
+            "Check the publisher and publication date.",
+            "Confirm important claims with trusted reporting.",
+        ],
+    }
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -56,6 +141,7 @@ def predict():
             }), 400
 
         raw_text = data['text'].strip()
+        recency_signals = detect_recency_signals(raw_text)
         
         # Word count validation before cleaning
         word_count = len(raw_text.split())
@@ -85,6 +171,7 @@ def predict():
         # Probability scores
         fake_prob = float(probabilities[0])
         real_prob = float(probabilities[1])
+        verification = build_verification_guidance(confidence, recency_signals)
 
         # Determine verdict
         if confidence < CONFIDENCE_THRESHOLD:
@@ -104,8 +191,10 @@ def predict():
             },
             'metadata': {
                 'word_count': word_count,
-                'cleaned_word_count': len(cleaned_text.split())
-            }
+                'cleaned_word_count': len(cleaned_text.split()),
+                'known_terms': int(news_vector.nnz),
+            },
+            'verification': verification,
         })
 
     except Exception as e:

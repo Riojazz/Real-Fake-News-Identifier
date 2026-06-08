@@ -6,3 +6,8 @@ __pycache__/
 venv/
 .venv/
 FakeDataset.zip
+FakeDataset/
+Fake.csv
+True.csv
+fake_news_model.pkl
+tfidf_vectorizer.pkl
